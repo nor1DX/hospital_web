@@ -43,5 +43,7 @@ bin/
 .DS_Store
 
 ### Project specific ###
+
 exemple/
 .idea/
+.claude/
