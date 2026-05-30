@@ -2,6 +2,7 @@ package ru.vsu.hospital.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.vsu.hospital.model.dto.MedicalCardDetailsDto;
 import ru.vsu.hospital.model.dto.MedicalCardDto;
 import ru.vsu.hospital.model.request.CreateMedicalCardRequest;
 import ru.vsu.hospital.model.request.UpdateMedicalCardDoctorRequest;
@@ -24,6 +25,11 @@ public class MedicalCardController {
     @GetMapping
     public List<MedicalCardDto> getMedicalCards() {
         return medicalCardService.getMedicalCards();
+    }
+
+    @GetMapping("/details")
+    public List<MedicalCardDetailsDto> getMedicalCardsWithDetails() {
+        return medicalCardService.getMedicalCardsWithDetails();
     }
 
     @PostMapping

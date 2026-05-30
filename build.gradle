@@ -23,12 +23,11 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-mongodb-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testCompileOnly 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -38,9 +37,35 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb-test'
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.register('runHospitalRestLoadClient', JavaExec) {
+    group = 'application'
+    description = 'Runs the REST load client for bulk data creation'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'ru.vsu.hospital.client.HospitalRestLoadClient'
+
+    if (project.hasProperty('baseUrl')) {
+        args "--base-url=${project.property('baseUrl')}"
+    }
+    if (project.hasProperty('entity')) {
+        args "--entity=${project.property('entity')}"
+    }
+    if (project.hasProperty('count')) {
+        args "--count=${project.property('count')}"
+    }
+    if (project.hasProperty('threads')) {
+        args "--threads=${project.property('threads')}"
+    }
+    if (project.hasProperty('batchSize')) {
+        args "--batch-size=${project.property('batchSize')}"
+    }
+    if (project.hasProperty('prefix')) {
+        args "--prefix=${project.property('prefix')}"
+    }
 }

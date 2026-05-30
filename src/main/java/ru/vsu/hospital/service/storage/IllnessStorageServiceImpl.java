@@ -2,11 +2,13 @@ package ru.vsu.hospital.service.storage;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vsu.hospital.component.mapper.IllnessMapper;
 import ru.vsu.hospital.model.dto.IllnessDto;
 import ru.vsu.hospital.model.entity.Illness;
 import ru.vsu.hospital.repository.IllnessRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,5 +69,20 @@ public class IllnessStorageServiceImpl implements IllnessStorageService {
                 .stream()
                 .map(illnessMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public long createIllnesses(String namePrefix, long startIndex, int count) {
+        String prefix = (namePrefix == null || namePrefix.isBlank()) ? "load-illness" : namePrefix;
+        List<Illness> illnesses = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            illnesses.add(Illness.builder()
+                    .name(prefix + "-" + (startIndex + i))
+                    .description("Автоматически сгенерированное заболевание номер " + (startIndex + i))
+                    .severity("MILD")
+                    .build());
+        }
+        return illnessRepository.saveAll(illnesses).size();
     }
 }

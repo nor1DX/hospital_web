@@ -41,4 +41,9 @@ public class IllnessServiceImpl implements IllnessService {
     public List<IllnessDto> searchByDescription(String searchText) {
         return illnessStorageService.searchByDescription(searchText);
     }
+
+    @Override
+    public long createIllnesses(String namePrefix, long startIndex, int count) {
+        return illnessStorageService.createIllnesses(namePrefix, startIndex, count);
+    }
 }

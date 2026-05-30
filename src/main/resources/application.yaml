@@ -1,8 +1,12 @@
 spring:
-  mongodb:
-    database: ${MONGO_NAME:hospital}
-    host: ${MONGO_WAY:localhost}
-    port: ${MONGO_PORT:27017}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:hospital}
+    username: ${POSTGRES_USER:hospital}
+    password: ${POSTGRES_PASSWORD:hospital}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
 
 server:
   port: 8080

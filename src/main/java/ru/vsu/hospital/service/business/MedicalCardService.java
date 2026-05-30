@@ -1,5 +1,6 @@
 package ru.vsu.hospital.service.business;
 
+import ru.vsu.hospital.model.dto.MedicalCardDetailsDto;
 import ru.vsu.hospital.model.dto.MedicalCardDto;
 import ru.vsu.hospital.model.request.CreateMedicalCardRequest;
 
@@ -8,6 +9,7 @@ import java.util.List;
 public interface MedicalCardService {
     MedicalCardDto getMedicalCardById(String medicalCardId);
     List<MedicalCardDto> getMedicalCards();
+    List<MedicalCardDetailsDto> getMedicalCardsWithDetails();
     MedicalCardDto createMedicalCard(CreateMedicalCardRequest request);
     MedicalCardDto updateMedicalCard(MedicalCardDto medicalCardDto);
     MedicalCardDto deleteMedicalCardById(String medicalCardId);

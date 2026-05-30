@@ -3,6 +3,7 @@ package ru.vsu.hospital.service.business;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.vsu.hospital.model.dto.DoctorDto;
+import ru.vsu.hospital.model.dto.DoctorStatsDto;
 import ru.vsu.hospital.service.storage.DoctorStorageService;
 
 import java.util.List;
@@ -23,6 +24,21 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public List<DoctorDto> getDoctorsBySpecialization(String specialization) {
+        return doctorStorageService.getDoctorsBySpecialization(specialization);
+    }
+
+    @Override
+    public List<DoctorDto> getDoctorsSortedByLastName() {
+        return doctorStorageService.getDoctorsSortedByLastName();
+    }
+
+    @Override
+    public List<DoctorStatsDto> getDoctorStats() {
+        return doctorStorageService.getDoctorStats();
+    }
+
+    @Override
     public DoctorDto createDoctor(DoctorDto doctorDto) {
         return doctorStorageService.createDoctor(doctorDto);
     }
@@ -35,5 +51,10 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public DoctorDto deleteDoctorById(String doctorId) {
         return doctorStorageService.deleteDoctorById(doctorId);
+    }
+
+    @Override
+    public long createDoctors(String namePrefix, long startIndex, int count) {
+        return doctorStorageService.createDoctors(namePrefix, startIndex, count);
     }
 }

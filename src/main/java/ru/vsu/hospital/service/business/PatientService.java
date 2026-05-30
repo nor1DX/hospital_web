@@ -11,4 +11,5 @@ public interface PatientService {
     PatientDto createPatient(CreatePatientRequest request);
     PatientDto updatePatient(PatientDto patientDto);
     PatientDto deletePatient(String patientId);
+    long createPatients(String namePrefix, long startIndex, int count);
 }

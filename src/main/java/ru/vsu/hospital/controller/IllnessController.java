@@ -2,7 +2,9 @@ package ru.vsu.hospital.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.vsu.hospital.model.dto.BulkOperationResultDto;
 import ru.vsu.hospital.model.dto.IllnessDto;
+import ru.vsu.hospital.model.request.BulkCreateRequest;
 import ru.vsu.hospital.service.business.IllnessService;
 
 import java.util.List;
@@ -31,6 +33,15 @@ public class IllnessController {
     @PostMapping
     public IllnessDto createIllness(@RequestBody IllnessDto illnessDto) {
         return illnessService.createIllness(illnessDto);
+    }
+
+    @PostMapping("/bulk")
+    public BulkOperationResultDto createIllnesses(@RequestBody BulkCreateRequest request) {
+        long processed = illnessService.createIllnesses(request.getNamePrefix(), request.getStartIndex(), request.getCount());
+        return BulkOperationResultDto.builder()
+                .requested(request.getCount())
+                .processed(processed)
+                .build();
     }
 
     @PutMapping

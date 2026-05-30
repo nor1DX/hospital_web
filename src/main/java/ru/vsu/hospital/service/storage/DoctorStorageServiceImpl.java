@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vsu.hospital.component.mapper.DoctorMapper;
 import ru.vsu.hospital.model.dto.DoctorDto;
+import ru.vsu.hospital.model.dto.DoctorStatsDto;
 import ru.vsu.hospital.model.entity.Doctor;
 import ru.vsu.hospital.repository.DoctorRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,6 +33,27 @@ public class DoctorStorageServiceImpl implements DoctorStorageService {
                 .stream()
                 .map(doctorMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public List<DoctorDto> getDoctorsBySpecialization(String specialization) {
+        return doctorRepository.findBySpecialization(specialization)
+                .stream()
+                .map(doctorMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<DoctorDto> getDoctorsSortedByLastName() {
+        return doctorRepository.findAllByOrderByLastNameAsc()
+                .stream()
+                .map(doctorMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<DoctorStatsDto> getDoctorStats() {
+        return doctorRepository.getStatsBySpecialization();
     }
 
     @Override
@@ -58,7 +81,6 @@ public class DoctorStorageServiceImpl implements DoctorStorageService {
                 .orElseThrow(() -> new IllegalArgumentException("Doctor does not exist"));
 
         medicalCardStorageService.removeDoctor(doctor.getId());
-
         doctorRepository.deleteById(doctorId);
 
         return doctorMapper.toDto(doctor);
@@ -67,5 +89,20 @@ public class DoctorStorageServiceImpl implements DoctorStorageService {
     @Override
     public boolean doctorExists(String doctorId) {
         return doctorRepository.existsById(doctorId);
+    }
+
+    @Override
+    @Transactional
+    public long createDoctors(String namePrefix, long startIndex, int count) {
+        String prefix = (namePrefix == null || namePrefix.isBlank()) ? "load-doctor" : namePrefix;
+        List<Doctor> doctors = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            doctors.add(Doctor.builder()
+                    .firstName(prefix + "-" + (startIndex + i))
+                    .lastName("Bulk")
+                    .specialization("Терапевт")
+                    .build());
+        }
+        return doctorRepository.saveAll(doctors).size();
     }
 }

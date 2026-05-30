@@ -1,17 +1,15 @@
 package ru.vsu.hospital.service.storage;
 
 import lombok.AllArgsConstructor;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vsu.hospital.component.mapper.PatientMapper;
 import ru.vsu.hospital.model.dto.PatientDto;
 import ru.vsu.hospital.model.entity.Patient;
 import ru.vsu.hospital.model.request.CreatePatientRequest;
 import ru.vsu.hospital.repository.PatientRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,7 +17,6 @@ import java.util.List;
 public class PatientStorageServiceImpl implements PatientStorageService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
-    private final MongoTemplate mongoTemplate;
 
     @Override
     public PatientDto getPatientById(String patientId) {
@@ -72,19 +69,32 @@ public class PatientStorageServiceImpl implements PatientStorageService {
 
     @Override
     public PatientDto setMedicalCard(String patientId, String medicalCardId) {
-        Query query = new Query().addCriteria(Criteria.where("_id").is(patientId));
-        Update update = new Update().set("medicalCardId", medicalCardId);
-
-        mongoTemplate.updateFirst(query, update, Patient.class);
-
-        return patientMapper.toDto(mongoTemplate.findOne(query, Patient.class));
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        patient.setMedicalCardId(medicalCardId);
+        return patientMapper.toDto(patientRepository.save(patient));
     }
 
     @Override
     public void changeMedicalCard(String medicalCardId, String newMedicalCardId) {
-        Query query = new Query().addCriteria(Criteria.where("medicalCardId").is(medicalCardId));
-        Update update = new Update().set("medicalCardId", newMedicalCardId);
+        patientRepository.findByMedicalCardId(medicalCardId).ifPresent(patient -> {
+            patient.setMedicalCardId(newMedicalCardId);
+            patientRepository.save(patient);
+        });
+    }
 
-        mongoTemplate.updateFirst(query, update, Patient.class);
+    @Override
+    @Transactional
+    public long createPatients(String namePrefix, long startIndex, int count) {
+        String prefix = (namePrefix == null || namePrefix.isBlank()) ? "load-patient" : namePrefix;
+        List<Patient> patients = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            patients.add(Patient.builder()
+                    .firstName(prefix + "-" + (startIndex + i))
+                    .lastName("Bulk")
+                    .dateOfBirth("2000-01-01")
+                    .build());
+        }
+        return patientRepository.saveAll(patients).size();
     }
 }

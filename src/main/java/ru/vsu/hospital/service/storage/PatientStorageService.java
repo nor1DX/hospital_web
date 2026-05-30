@@ -14,4 +14,5 @@ public interface PatientStorageService {
     PatientDto deletePatient(String patientId);
     PatientDto setMedicalCard(String patientId, String medicalCardId);
     void changeMedicalCard(String medicalCardId, String newMedicalCardId);
+    long createPatients(String namePrefix, long startIndex, int count);
 }

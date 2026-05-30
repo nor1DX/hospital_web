@@ -1,14 +1,10 @@
 package ru.vsu.hospital.service.storage;
 
-import com.mongodb.client.result.UpdateResult;
 import lombok.AllArgsConstructor;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vsu.hospital.component.mapper.MedicalCardMapper;
+import ru.vsu.hospital.model.dto.MedicalCardDetailsDto;
 import ru.vsu.hospital.model.dto.MedicalCardDto;
 import ru.vsu.hospital.model.entity.MedicalCard;
 import ru.vsu.hospital.model.request.CreateMedicalCardRequest;
@@ -23,7 +19,6 @@ public class MedicalCardStorageServiceImpl implements MedicalCardStorageService 
     private final PatientStorageService patientStorageService;
     private final MedicalCardRepository medicalCardRepository;
     private final MedicalCardMapper medicalCardMapper;
-    private final MongoTemplate mongoTemplate;
 
     @Override
     public MedicalCardDto getMedicalCardById(String medicalCardId) {
@@ -39,6 +34,11 @@ public class MedicalCardStorageServiceImpl implements MedicalCardStorageService 
                 .stream()
                 .map(medicalCardMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public List<MedicalCardDetailsDto> getMedicalCardsWithDetails() {
+        return medicalCardRepository.findAllWithDetails();
     }
 
     @Override
@@ -79,48 +79,49 @@ public class MedicalCardStorageServiceImpl implements MedicalCardStorageService 
     @Transactional
     public MedicalCardDto deleteMedicalCardById(String medicalCardId) {
         MedicalCardDto deleted = getMedicalCardById(medicalCardId);
-
         patientStorageService.changeMedicalCard(medicalCardId, null);
-
         medicalCardRepository.deleteById(medicalCardId);
-
         return deleted;
     }
 
     @Override
-    public UpdateResult addDoctor(String medicalCardId, String doctorId) {
-        Query query = new Query().addCriteria(Criteria.where("_id").is(medicalCardId));
-        Update update = new Update().set("doctorId", doctorId);
-        return mongoTemplate.updateFirst(query, update, MedicalCard.class);
+    public void addDoctor(String medicalCardId, String doctorId) {
+        MedicalCard card = medicalCardRepository.findById(medicalCardId)
+                .orElseThrow(() -> new RuntimeException("MedicalCard does not exist"));
+        card.setDoctorId(doctorId);
+        medicalCardRepository.save(card);
     }
 
     @Override
-    public UpdateResult removeDoctor(String doctorId) {
-        Query query = new Query().addCriteria(Criteria.where("doctorId").is(doctorId));
-        Update update = new Update().set("doctorId", null);
-        return mongoTemplate.updateMulti(query, update, MedicalCard.class);
+    public void removeDoctor(String doctorId) {
+        List<MedicalCard> cards = medicalCardRepository.findAllByDoctorId(doctorId);
+        cards.forEach(card -> card.setDoctorId(null));
+        medicalCardRepository.saveAll(cards);
     }
 
     @Override
-    public UpdateResult removeDoctorFromCard(String medicalCardId, String doctorId) {
-        Query query = new Query()
-                .addCriteria(Criteria.where("_id").is(medicalCardId))
-                .addCriteria(Criteria.where("doctorId").is(doctorId));
-        Update update = new Update().set("doctorId", null);
-        return mongoTemplate.updateFirst(query, update, MedicalCard.class);
+    public void removeDoctorFromCard(String medicalCardId, String doctorId) {
+        MedicalCard card = medicalCardRepository.findById(medicalCardId)
+                .orElseThrow(() -> new RuntimeException("MedicalCard does not exist"));
+        if (doctorId.equals(card.getDoctorId())) {
+            card.setDoctorId(null);
+            medicalCardRepository.save(card);
+        }
     }
 
     @Override
-    public UpdateResult addIllness(String medicalCardId, String illnessId) {
-        Query query = new Query().addCriteria(Criteria.where("_id").is(medicalCardId));
-        Update update = new Update().set("illnessId", illnessId);
-        return mongoTemplate.updateFirst(query, update, MedicalCard.class);
+    public void addIllness(String medicalCardId, String illnessId) {
+        MedicalCard card = medicalCardRepository.findById(medicalCardId)
+                .orElseThrow(() -> new RuntimeException("MedicalCard does not exist"));
+        card.setIllnessId(illnessId);
+        medicalCardRepository.save(card);
     }
 
     @Override
-    public UpdateResult markAsRecovered(String medicalCardId) {
-        Query query = new Query().addCriteria(Criteria.where("_id").is(medicalCardId));
-        Update update = new Update().set("expireAt", new Date());
-        return mongoTemplate.updateFirst(query, update, MedicalCard.class);
+    public void markAsRecovered(String medicalCardId) {
+        MedicalCard card = medicalCardRepository.findById(medicalCardId)
+                .orElseThrow(() -> new RuntimeException("MedicalCard does not exist"));
+        card.setExpireAt(new Date());
+        medicalCardRepository.save(card);
     }
 }

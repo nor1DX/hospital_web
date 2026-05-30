@@ -13,9 +13,11 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-ENV MONGO_NAME=hospital
-ENV MONGO_WAY=mongo
-ENV MONGO_PORT=27017
+ENV POSTGRES_HOST=postgres
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DB=hospital
+ENV POSTGRES_USER=hospital
+ENV POSTGRES_PASSWORD=hospital
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 

@@ -1,7 +1,10 @@
 package ru.vsu.hospital.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.vsu.hospital.model.entity.Patient;
 
-public interface PatientRepository extends MongoRepository<Patient, String> {
+import java.util.Optional;
+
+public interface PatientRepository extends JpaRepository<Patient, String> {
+    Optional<Patient> findByMedicalCardId(String medicalCardId);
 }

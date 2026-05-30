@@ -12,4 +12,5 @@ public interface IllnessStorageService {
     IllnessDto updateIllness(IllnessDto illnessDto);
     IllnessDto deleteIllnessById(String illnessId);
     List<IllnessDto> searchByDescription(String searchText);
+    long createIllnesses(String namePrefix, long startIndex, int count);
 }

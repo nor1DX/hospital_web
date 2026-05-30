@@ -2,6 +2,7 @@ package ru.vsu.hospital.service.business;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.vsu.hospital.model.dto.MedicalCardDetailsDto;
 import ru.vsu.hospital.model.dto.MedicalCardDto;
 import ru.vsu.hospital.model.request.CreateMedicalCardRequest;
 import ru.vsu.hospital.service.storage.MedicalCardStorageService;
@@ -21,6 +22,11 @@ public class MedicalCardServiceImpl implements MedicalCardService {
     @Override
     public List<MedicalCardDto> getMedicalCards() {
         return medicalCardStorageService.getMedicalCards();
+    }
+
+    @Override
+    public List<MedicalCardDetailsDto> getMedicalCardsWithDetails() {
+        return medicalCardStorageService.getMedicalCardsWithDetails();
     }
 
     @Override

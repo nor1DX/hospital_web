@@ -37,4 +37,9 @@ public class PatientServiceImpl implements PatientService {
     public PatientDto deletePatient(String patientId) {
         return patientStorageService.deletePatient(patientId);
     }
+
+    @Override
+    public long createPatients(String namePrefix, long startIndex, int count) {
+        return patientStorageService.createPatients(namePrefix, startIndex, count);
+    }
 }
