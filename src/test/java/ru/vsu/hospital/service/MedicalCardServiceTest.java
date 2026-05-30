@@ -9,6 +9,7 @@ import ru.vsu.hospital.model.dto.MedicalCardDetailsDto;
 import ru.vsu.hospital.model.dto.MedicalCardDto;
 import ru.vsu.hospital.model.request.CreateMedicalCardRequest;
 import ru.vsu.hospital.service.business.MedicalCardServiceImpl;
+import ru.vsu.hospital.service.kafka.KafkaEventProducer;
 import ru.vsu.hospital.service.storage.MedicalCardStorageService;
 
 import java.util.Date;
@@ -24,6 +25,9 @@ class MedicalCardServiceTest {
 
     @Mock
     private MedicalCardStorageService medicalCardStorageService;
+
+    @Mock
+    private KafkaEventProducer kafkaEventProducer;
 
     @InjectMocks
     private MedicalCardServiceImpl medicalCardService;

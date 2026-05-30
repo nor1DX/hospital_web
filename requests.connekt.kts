@@ -177,3 +177,46 @@ GET("http://localhost:8080/medical-cards/details") {}
 
 // Выборка с агрегацией кол-во врачей по специализации
 GET("http://localhost:8080/doctors/stats") {}
+
+
+// ===== ЗАДАЧИ 8-11: KAFKA =====
+
+// Отправить событие вручную в топик hospital.doctors (version=1)
+POST("http://localhost:8080/events") {
+    header("Content-Type", "application/json")
+    body(
+        """
+        {
+          "topic": "hospital.doctors",
+          "eventType": "MANUAL",
+          "entityType": "DOCTOR",
+          "entityId": "manual-001",
+          "payload": "ручное событие из REST",
+          "version": 1
+        }
+        """.trimIndent()
+    )
+}
+
+// Отправить событие с другой версией (version=2, другой источник)
+POST("http://localhost:8080/events") {
+    header("Content-Type", "application/json")
+    body(
+        """
+        {
+          "topic": "hospital.patients",
+          "eventType": "MANUAL",
+          "entityType": "PATIENT",
+          "entityId": "manual-002",
+          "payload": "событие из второго источника",
+          "version": 2
+        }
+        """.trimIndent()
+    )
+}
+
+// Посмотреть лог всех событий (то что consumer записал в БД)
+GET("http://localhost:8080/events") {}
+
+// Посмотреть счётчики сообщений по топикам (с блокировкой на запись)
+GET("http://localhost:8080/events/counters") {}

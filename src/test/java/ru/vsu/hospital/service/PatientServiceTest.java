@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.vsu.hospital.model.dto.PatientDto;
 import ru.vsu.hospital.model.request.CreatePatientRequest;
 import ru.vsu.hospital.service.business.PatientServiceImpl;
+import ru.vsu.hospital.service.kafka.KafkaEventProducer;
 import ru.vsu.hospital.service.storage.PatientStorageService;
 
 import java.util.List;
@@ -20,6 +21,9 @@ class PatientServiceTest {
 
     @Mock
     private PatientStorageService patientStorageService;
+
+    @Mock
+    private KafkaEventProducer kafkaEventProducer;
 
     @InjectMocks
     private PatientServiceImpl patientService;
