@@ -83,16 +83,27 @@ public class PatientStorageServiceImpl implements PatientStorageService {
         });
     }
 
+    private static final String[] LAST_NAMES = {
+            "Иванов", "Петров", "Сидоров", "Козлов", "Новиков",
+            "Морозов", "Волков", "Алексеев", "Лебедев", "Семенов"
+    };
+
+    private static final String[] BIRTH_YEARS = {
+            "1960", "1965", "1970", "1975", "1980",
+            "1985", "1990", "1995", "2000", "2005"
+    };
+
     @Override
     @Transactional
     public long createPatients(String namePrefix, long startIndex, int count) {
         String prefix = (namePrefix == null || namePrefix.isBlank()) ? "load-patient" : namePrefix;
         List<Patient> patients = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
+            long idx = startIndex + i;
             patients.add(Patient.builder()
-                    .firstName(prefix + "-" + (startIndex + i))
-                    .lastName("Bulk")
-                    .dateOfBirth("2000-01-01")
+                    .firstName(prefix + "-" + idx)
+                    .lastName(LAST_NAMES[(int)(idx % LAST_NAMES.length)])
+                    .dateOfBirth(BIRTH_YEARS[(int)(idx % BIRTH_YEARS.length)] + "-01-01")
                     .build());
         }
         return patientRepository.saveAll(patients).size();

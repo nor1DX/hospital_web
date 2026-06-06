@@ -91,16 +91,30 @@ public class DoctorStorageServiceImpl implements DoctorStorageService {
         return doctorRepository.existsById(doctorId);
     }
 
+    private static final String[] SPECIALIZATIONS = {
+            "Терапевт", "Хирург", "Кардиолог", "Невролог", "Педиатр",
+            "Дерматолог", "Ортопед", "Офтальмолог", "Стоматолог", "Психиатр",
+            "Гастроэнтеролог", "Эндокринолог", "Пульмонолог", "Ревматолог", "Нефролог",
+            "Онколог", "Гематолог", "Инфекционист", "Аллерголог", "Уролог"
+    };
+
+    private static final String[] LAST_NAMES = {
+            "Иванов", "Петров", "Сидоров", "Козлов", "Новиков",
+            "Морозов", "Волков", "Алексеев", "Лебедев", "Семенов",
+            "Егоров", "Павлов", "Степанов", "Николаев", "Орлов"
+    };
+
     @Override
     @Transactional
     public long createDoctors(String namePrefix, long startIndex, int count) {
         String prefix = (namePrefix == null || namePrefix.isBlank()) ? "load-doctor" : namePrefix;
         List<Doctor> doctors = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
+            long idx = startIndex + i;
             doctors.add(Doctor.builder()
-                    .firstName(prefix + "-" + (startIndex + i))
-                    .lastName("Bulk")
-                    .specialization("Терапевт")
+                    .firstName(prefix + "-" + idx)
+                    .lastName(LAST_NAMES[(int)(idx % LAST_NAMES.length)])
+                    .specialization(SPECIALIZATIONS[(int)(idx % SPECIALIZATIONS.length)])
                     .build());
         }
         return doctorRepository.saveAll(doctors).size();
