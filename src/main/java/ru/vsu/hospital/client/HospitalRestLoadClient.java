@@ -25,14 +25,14 @@ public class HospitalRestLoadClient {
                 .baseUrl(config.baseUrl())
                 .build();
 
-        System.out.printf("Начало загрузки: entity=%s, count=%d, threads=%d, batchSize=%d%n",
+        System.out.printf("Start of download: entity=%s, count=%d, threads=%d, batchSize=%d%n",
                 config.entity(), config.count(), config.threads(), config.batchSize());
 
         Instant startedAt = Instant.now();
         long processed = runLoad(restClient, config);
         Duration duration = Duration.between(startedAt, Instant.now());
 
-        System.out.printf("Загружено %d записей в %d мс, потоков: %d, размер батча: %d%n",
+        System.out.printf("Loaded %d records in %d ms, threads: %d, batch size: %d%n",
                 processed, duration.toMillis(), config.threads(), config.batchSize());
     }
 
